@@ -28,7 +28,7 @@ blueprint:
       name: Light
       description: Select the light entity you wish to control.
       selector:
-        device:
+        entity:
           filter:
             - integration: zha
               manufacturer: IKEA of Sweden

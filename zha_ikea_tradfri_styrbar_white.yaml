@@ -132,11 +132,11 @@ action:
               entity_id: !input light
             data:
               color_temp:
-                - '{% if state_attr(var_light, "color_temp") + 18 > 500 %}'
+                - '{% if state_attr(var_light, "color_temp") + 18 > 500 %}
                      {{ 500 }}
                    {% else %}
                      {{ state_attr(var_light, "color_temp") + 18 }}
-                   {% endif %}
+                   {% endif %}'
               transition: "{{ (var_speed / 1000)|float }}"
 
       # Long-Press on the left button.
@@ -154,11 +154,11 @@ action:
                     entity_id: !input light
                   data:
                     color_temp:
-                      - {% if state_attr(var_light, "color_temp") + 18 > 500 %}
+                      - '{% if state_attr(var_light, "color_temp") + 18 > 500 %}
                            {{ 500 }}
                          {% else %}
                            {{ state_attr(var_light, "color_temp") + 18 }}
-                         {% endif %}
+                         {% endif %}'
                     transition: "{{ (var_speed / 1000)|float }}"
                 - delay:
                     milliseconds: !input speed

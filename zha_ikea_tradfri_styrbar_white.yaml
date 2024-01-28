@@ -1,14 +1,21 @@
 ---
+# | Button   | Action                     |
+# | -------- | -------------------------- |
+# | Up       | ON / Increase brightness   |
+# | Down     | OFF / Decrease brightness  |
+# | Right    | Increase temperature       |
+# | Left     | Decrease temperature       |
 blueprint:
   source_url: https://github.com/k1ssj6n0s/homeassistant-config/blob/main/zha_ikea_tradfri_styrbar_white.yaml
-  name: ZHA - IKEA TRADFRI - STYRBAR - White Lights
-  description: This automation simulates the use of the IKEA TRADFRI STYRBAR
+  name: ZHA - IKEA TRÅDFRI - STYRBAR - White Spectrum Lights
+  description: >-
+    This automation simulates the use of the IKEA TRÅDFRI STYRBAR
     remote control with TRÅDFRI GU10 345lm white spectrum buld (LED2106R3)
     connected through ZHA.
   domain: automation
   input:
     remote:
-      name: IKEA TRADFRI remote control
+      name: IKEA TRÅDFRI remote control
       description: Select the remote control you wish to use.
       selector:
         device:
@@ -17,7 +24,7 @@ blueprint:
               manufacturer: IKEA of Sweden
               model: Remote Control N2
     light:
-      name: Light
+      name: IKEA TRÅDFRI GU10 345lm white spectrum buld (LED2106R3)
       description: Select the light entity you wish to control.
       selector:
         entity:
@@ -37,25 +44,25 @@ blueprint:
 mode: restart
 max_exceeded: silent
 variables:
-  var_light: light
-  var_speed: speed
+  var_light: !input light
+  var_speed: !input speed
 trigger:
   - platform: event
     event_type: zha_event
     event_data:
-      device_id: remote
+      device_id: !input remote
 action:
   - choose:
       - conditions:
           - condition: template
             value_template: '{{ trigger.event.data.command == "on" }}'
           - condition: state
-            entity_id: light
+            entity_id: !input light
             state: off
         sequence:
           - service: light.turn_on
             target:
-              entity_id: light
+              entity_id: !input light
             data:
               transition: "{{ (var_speed / 1000)|float }}"
       - conditions:
@@ -67,7 +74,7 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    entity_id: !input light
                   data:
                     brightness_step_pct: 10
                     transition: "{{ (var_speed / 1000)|float }}"
@@ -79,7 +86,7 @@ action:
         sequence:
           - service: light.turn_off
             target:
-              entity_id: light
+              entity_id: !input light
             data:
               transition: "{{ (var_speed / 1000)|float }}"
       - conditions:
@@ -91,7 +98,7 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    entity_id: !input light
                   data:
                     brightness_step_pct: -10
                     transition: "{{ (var_speed / 1000)|float }}"
@@ -105,11 +112,14 @@ action:
         sequence:
           - service: light.turn_on
             target:
-              entity_id: light
+              entity_id: !input light
             data:
-              color_temp: '{% if state_attr(var_light, "color_temp") + 18 > 500 %} {{ 500 }}
-                {% else %} {{ state_attr(var_light, "color_temp") + 18 }} {%
-                endif %}'
+              color_temp: >-
+                {% if state_attr(var_light, "color_temp") + 18 > 500 %}
+                  {{ 500 }}
+                {% else %}
+                  {{ state_attr(var_light, "color_temp") + 18 }}
+                {% endif %}
               transition: "{{ (var_speed / 1000)|float }}"
       - conditions:
           - condition: template
@@ -122,11 +132,14 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    entity_id: !input light
                   data:
-                    color_temp: '{% if state_attr(var_light, "color_temp") + 18 > 500 %} {{ 500 }}
-                      {% else %} {{ state_attr(var_light, "color_temp") + 18 }}
-                      {% endif %}'
+                    color_temp: >-
+                      {% if state_attr(var_light, "color_temp") + 18 > 500 %}
+                        {{ 500 }}
+                      {% else %}
+                        {{ state_attr(var_light, "color_temp") + 18 }}
+                      {% endif %}
                     transition: "{{ (var_speed / 1000)|float }}"
                 - delay:
                     milliseconds: speed
@@ -138,11 +151,14 @@ action:
         sequence:
           - service: light.turn_on
             target:
-              entity_id: light
+              entity_id: !input light
             data:
-              color_temp: '{% if state_attr(var_light, "color_temp") - 18 < 153 %} {{ 153 }}
-                {% else %} {{ state_attr(var_light, "color_temp") - 18 }} {%
-                endif %}'
+              color_temp: >-
+                {% if state_attr(var_light, "color_temp") - 18 < 153 %}
+                  {{ 153 }}
+                {% else %}
+                  {{ state_attr(var_light, "color_temp") - 18 }}
+                {% endif %}
               transition: "{{ (var_speed / 1000)|float }}"
       - conditions:
           - condition: template
@@ -155,12 +171,16 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    entity_id: !input light
                   data:
-                    color_temp: '{% if state_attr(var_light, "color_temp") - 18 < 153 %} {{ 153 }}
-                      {% else %} {{ state_attr(var_light, "color_temp") - 18 }}
-                      {% endif %}'
+                    color_temp: >-
+                      {% if state_attr(var_light, "color_temp") - 18 < 153 %}
+                        {{ 153 }}
+                      {% else %}
+                        {{ state_attr(var_light, "color_temp") - 18 }}
+                      {% endif %}
                     transition: "{{ (var_speed / 1000)|float }}"
                 - delay:
                     milliseconds: speed
+    # Any other event will cancel the repeat loops.
     default: []

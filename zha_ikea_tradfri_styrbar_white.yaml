@@ -1,29 +1,29 @@
 ---
-# This automation simulates the use of the IKEA TRADFRI Remote control
+# This automation simulates the use of the IKEA TRÅDFRI STYRBAR remote control with TRÅDFRI GU10 345lm white spectrum buld (LED2106R3)
 # connected through ZHA.
 
-# | Button   | Action               |
-# | -------- | -------------------- |
-# | Power    | Toggle the light     |
-# | Dim-Up   | Increase brightness  |
-# | Dim-Down | Decrease brightness  |
-# | Right    | Increase temperature |
-# | Left     | Decrease temperature |
+# | Button   | Action                     |
+# | -------- | -------------------------- |
+# | Up       | ON / Increase brightness   |
+# | Down     | OFF / Decrease brightness  |
+# | Right    | Increase temperature       |
+# | Left     | Decrease temperature       |
 
 blueprint:
   source_url: https://github.com/k1ssj6n0s/homeassistant-config/blob/main/zha_ikea_tradfri_styrbar_white.yaml
 
-  name: ZHA - IKEA TRADFRI - 5 Button Remote - Warm White Lights
+  name: ZHA - IKEA TRÅDFRI - STYRBAR - White Spectrum Lights
 
   description: >-
-    This automation simulates the use of the IKEA TRADFRI remote control
+    This automation simulates the use of the IKEA TRÅDFRI STYRBAR
+    remote control with TRÅDFRI GU10 345 lm white spectrum buld (LED2106R3)
     connected through ZHA.
 
   domain: automation
 
   input:
     remote:
-      name: IKEA TRADFRI remote control
+      name: IKEA TRADFRI STYRBAR remote control
       description: Select the remote control you wish to use.
       selector:
         device:
@@ -32,7 +32,7 @@ blueprint:
               manufacturer: IKEA of Sweden
               model: Remote Control N2
     light:
-      name: Light
+      name: IKEA TRADFRI GU10 345lm white spectrum buld (LED2106R3)
       description: Select the light entity you wish to control.
       selector:
         entity:
@@ -65,37 +65,18 @@ trigger:
 
 action:
   - choose:
-      # Short-Press on the power button.
-      - conditions:
-          - condition: template
-            value_template: '{{ trigger.event.data.command == "toggle" }}'
-        sequence:
-          - service: light.toggle
-            target:
-              entity_id: !input light
-
-      # Long-Press on the power button.
-      - conditions:
-          - condition: template
-            value_template: '{{ trigger.event.data.command == "move_to_level_with_on_off" }}'
-        sequence:
-          - service: light.turn_on
-            target:
-              entity_id: !input light
-            data:
-              brightness: 254
-              color_temp: 400
-
       # Short-Press on the dim-up button.
       - conditions:
           - condition: template
-            value_template: '{{ trigger.event.data.command == "step_with_on_off" }}'
+            value_template: '{{ trigger.event.data.command == "on" }}'
+          - condition: state
+            entity_id: !input loght
+            state: off
         sequence:
           - service: light.turn_on
             target:
               entity_id: !input light
             data:
-              brightness_step_pct: 20
               transition: "{{ (var_speed / 1000)|float }}"
 
       # Long-Press on the dim-up button.
@@ -118,13 +99,12 @@ action:
       # Short-Press on the dim-down button.
       - conditions:
           - condition: template
-            value_template: '{{ trigger.event.data.command == "step" }}'
+            value_template: '{{ trigger.event.data.command == "off" }}'
         sequence:
-          - service: light.turn_on
+          - service: light.turn_off
             target:
               entity_id: !input light
             data:
-              brightness_step_pct: -20
               transition: "{{ (var_speed / 1000)|float }}"
 
       # Long-Press on the dim-down button.
@@ -144,7 +124,7 @@ action:
                 - delay:
                     milliseconds: !input speed
 
-      # Short-Press on the color-up button.
+      # Short-Press on the right button.
       - conditions:
           - condition: template
             value_template: '{{ trigger.event.data.command == "press" }}'
@@ -163,7 +143,7 @@ action:
                 {% endif %}
               transition: "{{ (var_speed / 1000)|float }}"
 
-      # Long-Press on the color-up button.
+      # Long-Press on the right button.
       - conditions:
           - condition: template
             value_template: '{{ trigger.event.data.command == "hold" }}'
@@ -187,7 +167,7 @@ action:
                 - delay:
                     milliseconds: !input speed
 
-      # Short-Press on the color-down button.
+      # Short-Press on the left button.
       - conditions:
           - condition: template
             value_template: '{{ trigger.event.data.command == "press" }}'
@@ -206,7 +186,7 @@ action:
                 {% endif %}
               transition: "{{ (var_speed / 1000)|float }}"
 
-      # Long-Press on the color-down button.
+      # Long-Press on the left button.
       - conditions:
           - condition: template
             value_template: '{{ trigger.event.data.command == "hold" }}'

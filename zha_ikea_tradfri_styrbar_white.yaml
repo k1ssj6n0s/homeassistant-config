@@ -20,7 +20,7 @@ blueprint:
       name: Light
       description: Select the light entity you wish to control.
       selector:
-        entity:
+        device:
           filter:
           - domain: light
           multiple: false
@@ -51,12 +51,12 @@ action:
           - condition: template
             value_template: '{{ trigger.event.data.command == "on" }}'
           - condition: state
-            entity_id: light
+            device_id: light
             state: off
         sequence:
           - service: light.turn_on
             target:
-              entity_id: light
+              device_id: light
             data:
               transition: "{{ (var_speed / 1000)|float }}"
       - conditions:
@@ -68,7 +68,7 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    device_id: light
                   data:
                     brightness_step_pct: 10
                     transition: "{{ (var_speed / 1000)|float }}"
@@ -80,7 +80,7 @@ action:
         sequence:
           - service: light.turn_off
             target:
-              entity_id: light
+              device_id: light
             data:
               transition: "{{ (var_speed / 1000)|float }}"
       - conditions:
@@ -92,7 +92,7 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    device_id: light
                   data:
                     brightness_step_pct: -10
                     transition: "{{ (var_speed / 1000)|float }}"
@@ -106,7 +106,7 @@ action:
         sequence:
           - service: light.turn_on
             target:
-              entity_id: light
+              device_id: light
             data:
               color_temp: '{% if state_attr(var_light, "color_temp") + 18 > 500 %} {{ 500 }}
                 {% else %} {{ state_attr(var_light, "color_temp") + 18 }} {%
@@ -123,7 +123,7 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    device_id: light
                   data:
                     color_temp: '{% if state_attr(var_light, "color_temp") + 18 > 500 %} {{ 500 }}
                       {% else %} {{ state_attr(var_light, "color_temp") + 18 }}
@@ -139,7 +139,7 @@ action:
         sequence:
           - service: light.turn_on
             target:
-              entity_id: light
+              device_id: light
             data:
               color_temp: '{% if state_attr(var_light, "color_temp") - 18 < 153 %} {{ 153 }}
                 {% else %} {{ state_attr(var_light, "color_temp") - 18 }} {%
@@ -156,7 +156,7 @@ action:
               sequence:
                 - service: light.turn_on
                   target:
-                    entity_id: light
+                    device_id: light
                   data:
                     color_temp: '{% if state_attr(var_light, "color_temp") - 18 < 153 %} {{ 153 }}
                       {% else %} {{ state_attr(var_light, "color_temp") - 18 }}

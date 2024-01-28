@@ -71,7 +71,7 @@ action:
             value_template: '{{ trigger.event.data.command == "on" }}'
           - condition: state
             entity_id: !input light
-            state: off
+            state: "off"
         sequence:
           - service: light.turn_on
             target:

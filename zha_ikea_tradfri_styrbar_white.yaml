@@ -21,6 +21,9 @@ blueprint:
       description: Select the light entity you wish to control.
       selector:
         device:
+          filter:
+            - integration: zha
+              manufacturer: IKEA of Sweden
     speed:
       name: Speed
       description: The speed in which to update the light when the button is held.

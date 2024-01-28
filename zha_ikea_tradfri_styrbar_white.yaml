@@ -17,12 +17,14 @@ blueprint:
               manufacturer: IKEA of Sweden
               model: Remote Control N2
     light:
-      name: IKEA TRADFRI GU10 345 lm (LED2106R3)
+      name: Light
       description: Select the light entity you wish to control.
       selector:
         entity:
           filter:
-            - domain: light
+          - domain:
+            - light
+          multiple: false
     speed:
       name: Speed
       description: The speed in which to update the light when the button is held.

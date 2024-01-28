@@ -22,9 +22,7 @@ blueprint:
       selector:
         entity:
           filter:
-            - integration: zha
-              manufacturer: IKEA of Sweden
-              domain: light
+            - domain: light
     speed:
       name: Speed
       description: The speed in which to update the light when the button is held.

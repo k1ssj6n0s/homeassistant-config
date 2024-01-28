@@ -22,8 +22,7 @@ blueprint:
       selector:
         entity:
           filter:
-          - domain:
-            - light
+          - domain: light
           multiple: false
     speed:
       name: Speed

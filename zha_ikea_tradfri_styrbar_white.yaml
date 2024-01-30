@@ -136,10 +136,10 @@ action:
               entity_id: !input light
             data:
               color_temp: >-
-                {% if state_attr(var_light, "color_temp") - 18 < 153 %}
-                  {{ 153 }}
+                {% if state_attr(var_light, "color_temp") - 20 < 250 %}
+                  {{ 250 }}
                 {% else %}
-                  {{ state_attr(var_light, "color_temp") - 18 }}
+                  {{ state_attr(var_light, "color_temp") - 20 }}
                 {% endif %}
               transition: "{{ (var_speed / 1000)|float }}"
 
@@ -158,10 +158,10 @@ action:
                     entity_id: !input light
                   data:
                     color_temp: >-
-                      {% if state_attr(var_light, "color_temp") - 18 < 153 %}
-                        {{ 153 }}
+                      {% if state_attr(var_light, "color_temp") - 20 < 250 %}
+                        {{ 250 }}
                       {% else %}
-                        {{ state_attr(var_light, "color_temp") - 18 }}
+                        {{ state_attr(var_light, "color_temp") - 20 }}
                       {% endif %}
                     transition: "{{ (var_speed / 1000)|float }}"
                 - delay:
@@ -179,10 +179,10 @@ action:
               entity_id: !input light
             data:
               color_temp: >-
-                {% if state_attr(var_light, "color_temp") + 18 > 500 %}
-                  {{ 500 }}
+                {% if state_attr(var_light, "color_temp") + 20 > 454 %}
+                  {{ 454 }}
                 {% else %}
-                  {{ state_attr(var_light, "color_temp") + 18 }}
+                  {{ state_attr(var_light, "color_temp") + 20 }}
                 {% endif %}
               transition: "{{ (var_speed / 1000)|float }}"
 
@@ -201,10 +201,10 @@ action:
                     entity_id: !input light
                   data:
                     color_temp: >-
-                      {% if state_attr(var_light, "color_temp") + 18 > 500 %}
-                        {{ 500 }}
+                      {% if state_attr(var_light, "color_temp") + 20 > 454 %}
+                        {{ 454 }}
                       {% else %}
-                        {{ state_attr(var_light, "color_temp") + 18 }}
+                        {{ state_attr(var_light, "color_temp") + 20 }}
                       {% endif %}
                     transition: "{{ (var_speed / 1000)|float }}"
                 - delay:

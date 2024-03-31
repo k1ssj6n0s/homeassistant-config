@@ -1,0 +1,131 @@
+# Source: https://gist.github.com/bskjon/c28c23564cdac8b4191f61cb51467837
+
+blueprint:
+  name: Vízszivárgás
+  description: Figyelmeztetés vízszivárgásra
+  domain: automation
+  input:
+    water_sensor:
+      name: Szivárgásérzékelő
+      description: Vízszivárgás érzékelő
+      selector:
+        entity:
+          filter:
+            - device_class: moisture
+          multiple: true
+
+    devices:
+      name: Devices
+      description: Devices where notification should be sent
+      selector:
+        device:
+          integration: mobile_app
+          multiple: true
+trigger:
+  - platform: state
+    entity_id: !input water_sensor
+mode: single
+action:
+  # Debug
+  #  - service: input_text.set_value
+  #    data_template:
+  #      entity_id: input_text.debug
+  #      value: "{{ trigger }}"
+  #  - service: input_text.set_value
+  #    data_template:
+  #      entity_id: input_text.debug
+  #      value: "{{ trigger.entity_id }}"
+  #  - service: input_text.set_value
+  #    data_template:
+  #      entity_id: input_text.debug
+  #      value: "{{ trigger.to_state }}"
+  #  - service: input_text.set_value
+  #    data_template:
+  #      entity_id: input_text.debug
+  #      value: "{{ trigger.to_state.state }}"
+  #  - service: input_text.set_value
+  #    data_template:
+  #      entity_id: input_text.debug
+  #      value: "{{ is_state(trigger.to_state.state, 'on') }}"
+  #  - service: input_text.set_value
+  #    data_template:
+  #      entity_id: input_text.debug
+  #      value: "{{ trigger.to_state.state == 'on' }}"
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == 'on' }}"
+        sequence:
+          - alias: Send a notification to each device
+            repeat:
+              for_each: !input devices
+              sequence:
+                - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  data:
+                    title: "Vízszivárgás!"
+                    message: "Vízszivárgás tapasztalható! Ellenőrizze az érzékelő területeket."
+                    data:
+                      tag: "water-leak-alert"
+                      visibility: public
+                      notification_icon: "mdi:home-flood"
+                      color: "red"
+                - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  data:
+                    message: "TTS"
+                    data:
+                      tag: "water-leak-alert-tts"
+                      ttl: 0
+                      priority: high
+                      media_stream: alarm_stream_max
+                      language: "hu-HU"
+                      tts_text: "Vízszivárgás észlelve. Ellenőrizze az érzékelő területeket."
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == 'off' }}"
+        sequence:
+          - alias: Send a notification to each device
+            repeat:
+              for_each: !input devices
+              sequence:
+                - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  data:
+                    title: "A vízszivárgás megszűnt"
+                    message: "A vízszivárgás véget ért és az érzékelők megszáradtak."
+                    data:
+                      tag: "water-leak-alert"
+                      visibility: public
+                      notification_icon: "mdi:water-check"
+                      color: "green"
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.to_state.state == 'unavailable' }}"
+          - condition: template
+            value_template: "{{ trigger.to_state.state == 'unknown' }}"
+        sequence:
+          - alias: Send a notification to each device
+            repeat:
+              for_each: !input devices
+              sequence:
+                - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+                  data:
+                    title: "Lekapcsolt szivárgásérzékelő"
+                    message: "Egy vagy több szivárgásérzékelő nem elérhető. Kérjük, ellenőrizze, hogy az akkumulátor nem merült-e le, nincs-e leválasztva a koordinátor, és hogy a készülék be van-e kapcsolva és a hálózat tagja!"
+                    data:
+                      tag: "device-water-leak-detector-unavailable"
+                      visibility: public
+                      notification_icon: "mdi:water-off"
+                      color: "gray"
+
+    default:
+      - alias: Send a notification to each device
+        repeat:
+          for_each: !input devices
+          sequence:
+            - service: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | slugify }}"
+              data:
+                title: "TESZT – Vízszivárgás"
+                message: "Tesztértesítés vízszivárgásra"
+                data:
+                  tag: "water-leak-alert-test"
+                  visibility: public
+                  notification_icon: "mdi:home-flood"
